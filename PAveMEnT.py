@@ -9,8 +9,8 @@ import sys
 
 tossups = {}
 prefix = "Pavao and Renert's Listening Room"
-#chosen = [*range(66, 71)]
-chosen = [9, 20, 32, 38, 51]
+chosen = [*range(66, 71)]
+#chosen = [9, 20, 32, 38, 51]
 
 with open('Sheets/'+prefix+' - Clips.csv', mode='r') as csv_file:
 	csv_reader = csv.DictReader(csv_file)
@@ -47,15 +47,15 @@ for tossup in tossups:
 		dummy_counter += 1
 	if(total_song!=0):
 		pattern = re.compile(prefix+" Tossup "+tossup+"[a-z]?.mp3")
-		directory = "Regenerated/"
+		directory = "Tossups/"
 		token = ""
 		for filepath in sorted(os.listdir(directory)):
 			if pattern.match(filepath):
 				token = filepath
 		if(token!=""):
 			if(token[-5:-4]!=tossup):
-				total_song.export("Regenerated/"+token[:-5]+chr(ord(token[-5:-4])+1)+".mp3", format="mp3")
+				total_song.export("Tossups/"+token[:-5]+chr(ord(token[-5:-4])+1)+".mp3", format="mp3")
 			else:
-				total_song.export("Regenerated/"+prefix+" Tossup "+tossup+"a"+".mp3", format="mp3")
+				total_song.export("Tossups/"+prefix+" Tossup "+tossup+"a"+".mp3", format="mp3")
 		else:
-			total_song.export("Regenerated/"+prefix+" Tossup "+tossup+".mp3", format="mp3")
+			total_song.export("Tossups/"+prefix+" Tossup "+tossup+".mp3", format="mp3")
