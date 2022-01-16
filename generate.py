@@ -8,11 +8,11 @@ import re
 import sys
 
 tossups = {}
-prefix = "Pavao and Renert's Listening Room"
+sheetsFile = "Sample.csv"
 chosen = [*range(66, 71)]
 #chosen = [9, 20, 32, 38, 51]
 
-with open('Sheets/'+prefix+' - Clips.csv', mode='r') as csv_file:
+with open('Sheets/'+sheetsFile, mode='r') as csv_file:
 	csv_reader = csv.DictReader(csv_file)
 	for row in csv_reader:
 		if(row['Question']!='' and row['Direct link']!='' and int(row['Question']) in chosen):
