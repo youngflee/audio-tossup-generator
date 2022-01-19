@@ -46,7 +46,7 @@ for tossup in tossups:
 			total_song = total_song + faded
 		dummy_counter += 1
 	if(total_song!=0):
-		pattern = re.compile(prefix+" Tossup "+tossup+"[a-z]?.mp3")
+		pattern = re.compile(sheetsFile+" Tossup "+tossup+"[a-z]?.mp3")
 		directory = "Tossups/"
 		token = ""
 		for filepath in sorted(os.listdir(directory)):
@@ -56,6 +56,6 @@ for tossup in tossups:
 			if(token[-5:-4]!=tossup):
 				total_song.export("Tossups/"+token[:-5]+chr(ord(token[-5:-4])+1)+".mp3", format="mp3")
 			else:
-				total_song.export("Tossups/"+prefix+" Tossup "+tossup+"a"+".mp3", format="mp3")
+				total_song.export("Tossups/"+sheetsFile+" Tossup "+tossup+"a"+".mp3", format="mp3")
 		else:
-			total_song.export("Tossups/"+prefix+" Tossup "+tossup+".mp3", format="mp3")
+			total_song.export("Tossups/"+sheetsFile+" Tossup "+tossup+".mp3", format="mp3")
