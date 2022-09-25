@@ -9,9 +9,9 @@ Audio Tossup Generator creates .mp3 files from YouTube link information organize
 - If you do not have homebrew, [install homebrew](https://brew.sh/).
   - Install the ffmpeg library with `brew install ffmpeg`. If you previously have a brew install, you may have to run `brew update` or uninstall and reinstall for this step to be successful.
 - In Terminal, run `python --version  ` . If a version of Python 2 is listed, run `python3 --version`.
-- - Open `generate.py` in the repository. If there is a mismatch between the Python version of line 1 in the script, change line 1 to correspond to the version on your machine.
-- - Install pytube with `python3 -m pip install --upgrade pytube`. Whether you run `python` or `python3` depends on the result of the previous step.
-- - - `pytube` is a library that frequently breaks. You may have to run this previous command throughout your usage of this repo if you are getting pytube errors in the console.
+  - Open `generate.py` in the repository. If there is a mismatch between the Python version of line 1 in the script, change line 1 to correspond to the version on your machine.
+  - Install pytube with `python3 -m pip install --upgrade pytube`. Whether you run `python` or `python3` depends on the result of the previous step.
+    - `pytube` is a library that frequently breaks. You may have to run this previous command throughout your usage of this repo if you are getting pytube errors in the console.
 
 #### Debugging
 - Monitor your Terminal console for errors when using this repo. If an error is related to a library like pytube or ffmpeg, there likely has been a discussion created for it and solution available in Stack Overflow, which you can find by googling.
