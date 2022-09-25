@@ -12,6 +12,26 @@ sheetsFile = "Sample.csv"
 chosen = [*range(66, 71)]
 #chosen = [9, 20, 32, 38, 51]
 
+def tokenFinder(tossup, directory):
+	pattern = re.compile(sheetsFile+" Tossup "+tossup+"[a-z]?.mp3")
+	token = ""
+	for filepath in sorted(os.listdir(directory)):
+		if pattern.match(filepath):
+			token = filepath
+	return token
+
+def finalPathGen(token):
+	final_filepath = ""
+	for potentialDigitIndex in range(len(token)-2,0,-1): ##starts from len(token)-2 to exclude the 3 in mp3
+		if(token[potentialDigitIndex].isdigit()):
+			if(token[potentialDigitIndex+1].isalpha()):
+				final_filepath = token[0:potentialDigitIndex+1]+chr(ord(token[potentialDigitIndex+1])+1)+".mp3"
+				break
+			else:
+				final_filepath = token[0:potentialDigitIndex+1]+"a.mp3"
+				break
+	return final_filepath
+
 with open('Sheets/'+sheetsFile, mode='r') as csv_file:
 	csv_reader = csv.DictReader(csv_file)
 	for row in csv_reader:
@@ -24,16 +44,13 @@ with open('Sheets/'+sheetsFile, mode='r') as csv_file:
 for tossup in tossups:
 	tossup_files = []
 	for file in tossups[tossup]:
-		if(not path.isfile("Files/"+file[1]+".mp4")):
-			try:
-				current_vid = YouTube(file[0]).streams.filter(
-					only_audio=True, progressive=False, subtype='mp4').first().download("Files", file[1], skip_existing=True)
-				tossup_files.append([current_vid, float(file[2]), float(file[3])])
-			except Exception as inst:
-				print(inst)
-				print(file)
-		else:
-			tossup_files.append(["Files/"+file[1]+".mp4", float(file[2]), float(file[3])])
+		try:
+			current_vid = YouTube(file[0]).streams.filter(
+				only_audio=True, progressive=False, subtype='mp4').first().download("Files", file[1], skip_existing=True)
+			tossup_files.append([current_vid, float(file[2]), float(file[3])])
+		except Exception as inst:
+			print(inst)
+			print(file)
 	dummy_counter = 0
 	total_song = 0
 	for clip in tossup_files:
@@ -46,16 +63,16 @@ for tossup in tossups:
 			total_song = total_song + faded
 		dummy_counter += 1
 	if(total_song!=0):
-		pattern = re.compile(sheetsFile+" Tossup "+tossup+"[a-z]?.mp3")
 		directory = "Tossups/"
-		token = ""
-		for filepath in sorted(os.listdir(directory)):
-			if pattern.match(filepath):
-				token = filepath
+		token = tokenFinder(tossup, directory)
+		final_filepath = sheetsFile+" Tossup "+tossup+".mp3"
 		if(token!=""):
-			if(token[-5:-4]!=tossup):
-				total_song.export("Tossups/"+token[:-5]+chr(ord(token[-5:-4])+1)+".mp3", format="mp3")
-			else:
-				total_song.export("Tossups/"+sheetsFile+" Tossup "+tossup+"a"+".mp3", format="mp3")
-		else:
-			total_song.export("Tossups/"+sheetsFile+" Tossup "+tossup+".mp3", format="mp3")
+			final_filepath = finalPathGen(token)
+			if(final_filepath==""):
+				raise Exception("final_filepath came back empty")
+		print(final_filepath)
+		total_song.export(directory+final_filepath, format="mp3")
+dir = "Files"
+for f in os.listdir(dir):
+	os.remove(os.path.join(dir, f))
+os.rmdir(dir)
