@@ -45,7 +45,7 @@ for tossup in tossups:
 	tossup_files = []
 	for file in tossups[tossup]:
 		try:
-			current_vid = YouTube(file[0]).streams.filter(
+			current_vid = YouTube(file[0], use_oauth=True).streams.filter(
 				only_audio=True, progressive=False, subtype='mp4').first().download("Files", file[1], skip_existing=True)
 			tossup_files.append([current_vid, float(file[2]), float(file[3])])
 		except Exception as inst:
