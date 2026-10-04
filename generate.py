@@ -1,5 +1,6 @@
-#!/usr/bin/env python3.9
-from pytube import YouTube
+#!/usr/bin/env python3.13
+import yt_dlp
+from yt_dlp.utils import download_range_func
 from pydub import AudioSegment
 import os
 from os import path
@@ -7,15 +8,24 @@ import csv
 import re
 import sys
 
+os.mkdir("Files")
 tossups = {}
-sheetsFile = "Sample.csv"
-chosen = [*range(66, 71)]
-#chosen = [9, 20, 32, 38, 51]
+sheetsFile = "Private Audio Questions - Ten.csv"
+chosen = [1]
+#chosen = [*range(1, 8)]
 
 def tokenFinder(tossup, directory):
 	pattern = re.compile(sheetsFile+" Tossup "+tossup+"[a-z]?.mp3")
 	token = ""
 	for filepath in sorted(os.listdir(directory)):
+		if pattern.match(filepath):
+			token = filepath
+	return token
+
+def tokenFinderFiles(name, directory):
+	pattern = re.compile(name+"(\(1\))*.m4a")
+	token = ""
+	for filepath in sorted(os.listdir(directory), reverse=True):
 		if pattern.match(filepath):
 			token = filepath
 	return token
@@ -44,19 +54,38 @@ with open('Sheets/'+sheetsFile, mode='r') as csv_file:
 for tossup in tossups:
 	tossup_files = []
 	for file in tossups[tossup]:
-		try:
-			current_vid = YouTube(file[0], use_oauth=True).streams.filter(
-				only_audio=True, progressive=False, subtype='mp4').first().download("Files", file[1], skip_existing=True)
-			tossup_files.append([current_vid, float(file[2]), float(file[3])])
-		except Exception as inst:
-			print(inst)
-			print(file)
+		filename = file[1]
+		localDirectory = "Files/"
+		token = tokenFinderFiles(filename, localDirectory)
+		if(token!=""):
+			filename = token[:len(token)-4]+"(1)"
+			print(filename)
+		yt_opts = {
+			'format': 'bestaudio[ext=m4a]',
+			'outtmpl': 'Files/'+filename+'.m4a',
+			'download_ranges': download_range_func(None, [(float(file[2]), float(file[2]) + float(file[3]))]),
+			'force_keyframes_at_cuts': True,
+			'cookiesfrombrowser': ('chrome',)#, ## uncomment if you need to use this for age-restricted videos
+			#'extractor_args': {
+			#	'youtube': {
+			#		'player_client': ['default','web_safari'],
+			#		'player_js_version': ['actual']
+			#	}
+			#},
+			#'postprocessors': [{
+			#	'key': 'FFmpegExtractAudio',
+			#	'preferredcodec': 'm4a',
+			#	'preferredquality': '192'
+			#}]
+		}
+		with yt_dlp.YoutubeDL(yt_opts) as ydl:
+			ydl.download(file[0])
+		tossup_files.append(["Files/"+filename+'.m4a', float(file[2]), float(file[3])])
 	dummy_counter = 0
 	total_song = 0
 	for clip in tossup_files:
-		song = AudioSegment.from_file(clip[0], "mp4")
-		chopped = song[clip[1]*1000:clip[1]*1000+clip[2]*1000]
-		faded = chopped.fade_in(750).fade_out(750)
+		song = AudioSegment.from_file(clip[0], "m4a")
+		faded = song.fade_in(750).fade_out(750)
 		if(dummy_counter == 0):
 			total_song = faded
 		else:
